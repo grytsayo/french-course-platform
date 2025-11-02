@@ -364,11 +364,15 @@
         </div>
 
         <div class="back-link">
-            <a href="course-index.html">← Вернуться на главную</a>
+            <a href="index.html">← Вернуться на главную</a>
         </div>
     </div>
 
     <script>
+        const API_BASE = window.location.hostname === 'localhost'
+            ? 'http://localhost:3000/api'
+            : '/api';
+
         function selectMethod(method) {
             // Скрываем все формы
             document.querySelectorAll('.form-section').forEach(form => {
@@ -385,73 +389,87 @@
             }
         }
 
-        function processPaymentYukassa(event) {
+        async function processPaymentYukassa(event) {
             event.preventDefault();
-            
+
             const email = document.getElementById('email').value;
             const name = document.getElementById('name').value;
+            const submitButton = event.target.querySelector('button[type="submit"]');
 
-            // ВАЖНО: Здесь нужно интегрировать реальный API ЮKassa
-            // Документация: https://yookassa.ru/developers/payment-acceptance/getting-started/quick-start
-            
-            alert('⏳ Сейчас вы будете перенаправлены на страницу оплаты ЮKassa...\n\nВ production версии здесь будет реальная интеграция с API.');
-            
-            // TODO: Реальная интеграция
-            // fetch('/api/create-yukassa-payment', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({
-            //         amount: 45,
-            //         currency: 'EUR',
-            //         email: email,
-            //         name: name
-            //     })
-            // })
-            // .then(response => response.json())
-            // .then(data => {
-            //     window.location.href = data.paymentUrl;
-            // });
+            try {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Обработка...';
 
-            // Для демо - показываем успех
-            setTimeout(() => {
-                showSuccessDemo(email);
-            }, 2000);
+                const response = await fetch(`${API_BASE}/payments/yukassa/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: 45,
+                        currency: 'EUR',
+                        email: email,
+                        name: name
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.confirmation_url) {
+                    window.location.href = data.confirmation_url;
+                } else {
+                    throw new Error(data.error || 'Payment creation failed');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Ошибка при создании платежа. Пожалуйста, попробуйте еще раз или выберите другой способ оплаты.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Перейти к оплате 45 €';
+            }
         }
 
-        function processPaymentStripe(event) {
+        async function processPaymentStripe(event) {
             event.preventDefault();
-            
+
             const email = document.getElementById('email2').value;
             const name = document.getElementById('name2').value;
+            const submitButton = event.target.querySelector('button[type="submit"]');
 
-            alert('⏳ Redirecting to Stripe payment page...\n\nIn production, this will integrate with real Stripe API.');
-            
-            // TODO: Реальная интеграция Stripe
-            // Документация: https://stripe.com/docs/checkout
-            
-            setTimeout(() => {
-                showSuccessDemo(email);
-            }, 2000);
+            try {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Processing...';
+
+                const response = await fetch(`${API_BASE}/payments/stripe/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: 45,
+                        currency: 'eur',
+                        email: email,
+                        name: name
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.checkout_url) {
+                    window.location.href = data.checkout_url;
+                } else {
+                    throw new Error(data.error || 'Payment creation failed');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Error creating payment. Please try again or choose another payment method.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Pay 45 €';
+            }
         }
 
         function processPaymentCrypto(event) {
             event.preventDefault();
-            
+
             const email = document.getElementById('email3').value;
             const crypto = document.getElementById('crypto').value;
 
             alert('⏳ Генерируем адрес для оплаты...\n\nВ production версии здесь будет интеграция с Cryptomus или CryptoCloud.');
-            
-            // TODO: Реальная интеграция криптоплатежей
-            
-            setTimeout(() => {
-                showSuccessDemo(email);
-            }, 2000);
-        }
-
-        function showSuccessDemo(email) {
-            alert(`✅ ДЕМО: Оплата успешна!\n\nКод доступа отправлен на ${email}\n\nДемо код: DEMO2024\n\nВойдите в личный кабинет с этими данными.`);
-            window.location.href = 'login.html';
         }
     </script>
 </body>
