@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата курса | Общайся легко - на Лазурке!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .payment-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo .flag {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .price-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .price-display .amount {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .price-display .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .included-list {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .included-list h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .included-list ul {
+            list-style: none;
+        }
+
+        .included-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .included-list li:last-child {
+            border-bottom: none;
+        }
+
+        .included-list li::before {
+            content: '✓';
+            color: #48bb78;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .payment-methods {
+            margin-bottom: 30px;
+        }
+
+        .payment-methods h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .method-button {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .method-button:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .method-button .icon {
+            font-size: 2rem;
+        }
+
+        .method-info {
+            flex: 1;
+            text-align: left;
+            margin-left: 15px;
+        }
+
+        .method-info .name {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .method-info .desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .form-section {
+            display: none;
+            margin-top: 20px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .security-note {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f4ff;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .payment-container {
+                padding: 30px 20px;
+            }
+
+            .price-display .amount {
+                font-size: 2.5rem;
+            }
+
+            .method-button {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .method-info {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="logo">
+            <div class="flag">🇫🇷</div>
+            <h1>Оплата курса</h1>
+            <p class="subtitle">Общайся легко - на Лазурке!</p>
+        </div>
+
+        <div class="price-display">
+            <div class="amount">45 €</div>
+            <div class="description">Полный доступ к курсу на 60 дней</div>
+        </div>
+
+        <div class="included-list">
+            <h3>Что входит в курс:</h3>
+            <ul>
+                <li>10 видео-уроков по 15-20 минут</li>
+                <li>PDF конспекты всех уроков</li>
+                <li>Аудио-файлы для прослушивания</li>
+                <li>Доступ на 60 дней</li>
+                <li>Практические фразы для туристов</li>
+            </ul>
+        </div>
+
+        <div class="payment-methods">
+            <h3>Выберите способ оплаты:</h3>
+            
+            <button class="method-button" onclick="selectMethod('yukassa')">
+                <div class="icon">💳</div>
+                <div class="method-info">
+                    <div class="name">ЮKassa (Яндекс.Касса)</div>
+                    <div class="desc">Карты РФ, СБП, кошельки</div>
+                </div>
+            </button>
+
+            <button class="method-button" onclick="selectMethod('stripe')">
+                <div class="icon">🌍</div>
+                <div class="method-info">
+                    <div class="name">Stripe</div>
+                    <div class="desc">Международные карты</div>
+                </div>
+            </button>
+
+            <button class="method-button" onclick="selectMethod('crypto')">
+                <div class="icon">₿</div>
+                <div class="method-info">
+                    <div class="name">Криптовалюта</div>
+                    <div class="desc">BTC, USDT, ETH</div>
+                </div>
+            </button>
+        </div>
+
+        <!-- Форма ЮKassa -->
+        <div id="yukassaForm" class="form-section">
+            <h3 style="margin-bottom: 20px;">Оплата через ЮKassa</h3>
+            <form onsubmit="processPaymentYukassa(event)">
+                <div class="form-group">
+                    <label for="email">Email для отправки доступа</label>
+                    <input type="email" id="email" required placeholder="ваш@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="name">Ваше имя</label>
+                    <input type="text" id="name" required placeholder="Иван Иванов">
+                </div>
+                <button type="submit" class="pay-button">Перейти к оплате 45 €</button>
+            </form>
+        </div>
+
+        <!-- Форма Stripe -->
+        <div id="stripeForm" class="form-section">
+            <h3 style="margin-bottom: 20px;">Оплата через Stripe</h3>
+            <form onsubmit="processPaymentStripe(event)">
+                <div class="form-group">
+                    <label for="email2">Email</label>
+                    <input type="email" id="email2" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="name2">Name</label>
+                    <input type="text" id="name2" required placeholder="John Doe">
+                </div>
+                <button type="submit" class="pay-button">Pay 45 €</button>
+            </form>
+        </div>
+
+        <!-- Форма Crypto -->
+        <div id="cryptoForm" class="form-section">
+            <h3 style="margin-bottom: 20px;">Оплата криптовалютой</h3>
+            <p style="margin-bottom: 20px; color: #666;">
+                После заполнения формы вы получите адрес кошелька для оплаты
+            </p>
+            <form onsubmit="processPaymentCrypto(event)">
+                <div class="form-group">
+                    <label for="email3">Email</label>
+                    <input type="email" id="email3" required placeholder="ваш@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="crypto">Выберите валюту</label>
+                    <select id="crypto" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px;">
+                        <option value="btc">Bitcoin (BTC)</option>
+                        <option value="usdt">Tether (USDT)</option>
+                        <option value="eth">Ethereum (ETH)</option>
+                    </select>
+                </div>
+                <button type="submit" class="pay-button">Получить адрес для оплаты</button>
+            </form>
+        </div>
+
+        <div class="security-note">
+            🔒 Все платежи защищены SSL-сертификатом.<br>
+            После оплаты вы получите код доступа на указанный email.
+        </div>
+
+        <div class="back-link">
+            <a href="course-index.html">← Вернуться на главную</a>
+        </div>
+    </div>
+
+    <script>
+        function selectMethod(method) {
+            // Скрываем все формы
+            document.querySelectorAll('.form-section').forEach(form => {
+                form.classList.remove('active');
+            });
+
+            // Показываем выбранную форму
+            if (method === 'yukassa') {
+                document.getElementById('yukassaForm').classList.add('active');
+            } else if (method === 'stripe') {
+                document.getElementById('stripeForm').classList.add('active');
+            } else if (method === 'crypto') {
+                document.getElementById('cryptoForm').classList.add('active');
+            }
+        }
+
+        function processPaymentYukassa(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+
+            // ВАЖНО: Здесь нужно интегрировать реальный API ЮKassa
+            // Документация: https://yookassa.ru/developers/payment-acceptance/getting-started/quick-start
+            
+            alert('⏳ Сейчас вы будете перенаправлены на страницу оплаты ЮKassa...\n\nВ production версии здесь будет реальная интеграция с API.');
+            
+            // TODO: Реальная интеграция
+            // fetch('/api/create-yukassa-payment', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         amount: 45,
+            //         currency: 'EUR',
+            //         email: email,
+            //         name: name
+            //     })
+            // })
+            // .then(response => response.json())
+            // .then(data => {
+            //     window.location.href = data.paymentUrl;
+            // });
+
+            // Для демо - показываем успех
+            setTimeout(() => {
+                showSuccessDemo(email);
+            }, 2000);
+        }
+
+        function processPaymentStripe(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email2').value;
+            const name = document.getElementById('name2').value;
+
+            alert('⏳ Redirecting to Stripe payment page...\n\nIn production, this will integrate with real Stripe API.');
+            
+            // TODO: Реальная интеграция Stripe
+            // Документация: https://stripe.com/docs/checkout
+            
+            setTimeout(() => {
+                showSuccessDemo(email);
+            }, 2000);
+        }
+
+        function processPaymentCrypto(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email3').value;
+            const crypto = document.getElementById('crypto').value;
+
+            alert('⏳ Генерируем адрес для оплаты...\n\nВ production версии здесь будет интеграция с Cryptomus или CryptoCloud.');
+            
+            // TODO: Реальная интеграция криптоплатежей
+            
+            setTimeout(() => {
+                showSuccessDemo(email);
+            }, 2000);
+        }
+
+        function showSuccessDemo(email) {
+            alert(`✅ ДЕМО: Оплата успешна!\n\nКод доступа отправлен на ${email}\n\nДемо код: DEMO2024\n\nВойдите в личный кабинет с этими данными.`);
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

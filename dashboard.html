@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет | Общайся легко - на Лазурке!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo .flag {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .welcome-section h1 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .access-info {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card .label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-card .value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .progress-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .lesson-card.completed {
+            border-left: 5px solid #48bb78;
+        }
+
+        .lesson-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .lesson-card.completed .lesson-number {
+            background: #48bb78;
+        }
+
+        .lesson-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .lesson-card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .lesson-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .completed-badge {
+            background: #48bb78;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .start-button {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            background: #5568d3;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .access-info {
+                flex-direction: column;
+            }
+
+            .lessons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="flag">🇫🇷</span>
+                Общайся легко - на Лазурке!
+            </div>
+            <div class="user-info">
+                <span id="userEmail"></span>
+                <button class="logout-button" onclick="logout()">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome-section">
+            <h1>Добро пожаловать в личный кабинет!</h1>
+            <p>Здесь вы найдёте все 10 уроков курса. Проходите их в удобном темпе.</p>
+            
+            <div class="access-info">
+                <div class="info-card">
+                    <div class="label">Дата покупки</div>
+                    <div class="value" id="purchaseDate">--</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Доступ до</div>
+                    <div class="value" id="expiryDate">--</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Осталось дней</div>
+                    <div class="value" id="daysLeft">--</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <h2>Ваш прогресс</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">0%</div>
+            </div>
+            <p id="progressText">Пройдено уроков: 0 из 10</p>
+        </div>
+
+        <h2 style="margin-bottom: 30px;">Уроки курса</h2>
+        <div class="lessons-grid" id="lessonsGrid">
+            <!-- Уроки будут добавлены динамически -->
+        </div>
+    </div>
+
+    <script>
+        const lessons = [
+            {
+                id: 1,
+                title: 'Bonjour, Côte d\'Azur!',
+                description: 'Основные приветствия, представление, вежливые фразы',
+                duration: '18 мин'
+            },
+            {
+                id: 2,
+                title: 'Promenade des Anglais и пляжи',
+                description: 'Как спросить дорогу, заказать лежак, общение на пляже',
+                duration: '20 мин'
+            },
+            {
+                id: 3,
+                title: 'Транспорт по Лазурке',
+                description: 'Поезд TER, автобус, яхта - покупка билетов и навигация',
+                duration: '22 мин'
+            },
+            {
+                id: 4,
+                title: 'Отель и апартаменты',
+                description: 'Заселение, просьбы на ресепшн, решение проблем в номере',
+                duration: '19 мин'
+            },
+            {
+                id: 5,
+                title: 'Провансальская кухня',
+                description: 'Ресторан, меню, заказ блюд и напитков, счёт',
+                duration: '25 мин'
+            },
+            {
+                id: 6,
+                title: 'Шопинг и рынки',
+                description: 'Как спросить цену, торговаться, примерка одежды',
+                duration: '17 мин'
+            },
+            {
+                id: 7,
+                title: 'Достопримечательности',
+                description: 'Покупка билетов в музеи, парки, экскурсии',
+                duration: '21 мин'
+            },
+            {
+                id: 8,
+                title: 'Яхты, Монако и казино',
+                description: 'Специальная лексика для VIP-локаций Ривьеры',
+                duration: '23 мин'
+            },
+            {
+                id: 9,
+                title: 'Экстренные фразы',
+                description: 'Аптека, полиция, потерянные вещи, медицинская помощь',
+                duration: '16 мин'
+            },
+            {
+                id: 10,
+                title: 'Прощание и «je reviens!»',
+                description: 'Как красиво попрощаться и пообещать вернуться',
+                duration: '15 мин'
+            }
+        ];
+
+        // Проверка авторизации
+        function checkAuth() {
+            const userData = localStorage.getItem('courseUser');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return null;
+            }
+
+            const user = JSON.parse(userData);
+            const expiryDate = new Date(user.expiryDate);
+            const now = new Date();
+
+            if (now > expiryDate) {
+                alert('Ваш доступ к курсу истёк. Пожалуйста, продлите подписку.');
+                logout();
+                return null;
+            }
+
+            return user;
+        }
+
+        // Загрузка прогресса
+        function loadProgress() {
+            const progress = localStorage.getItem('courseProgress');
+            return progress ? JSON.parse(progress) : {};
+        }
+
+        // Сохранение прогресса
+        function saveProgress(progress) {
+            localStorage.setItem('courseProgress', JSON.stringify(progress));
+        }
+
+        // Отображение информации о пользователе
+        function displayUserInfo(user) {
+            document.getElementById('userEmail').textContent = user.email;
+
+            const purchaseDate = new Date(user.purchaseDate);
+            const expiryDate = new Date(user.expiryDate);
+            const now = new Date();
+
+            document.getElementById('purchaseDate').textContent = purchaseDate.toLocaleDateString('ru-RU');
+            document.getElementById('expiryDate').textContent = expiryDate.toLocaleDateString('ru-RU');
+
+            const daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+            document.getElementById('daysLeft').textContent = daysLeft;
+        }
+
+        // Отображение уроков
+        function displayLessons() {
+            const progress = loadProgress();
+            const lessonsGrid = document.getElementById('lessonsGrid');
+            
+            lessons.forEach(lesson => {
+                const isCompleted = progress[lesson.id] || false;
+                
+                const card = document.createElement('div');
+                card.className = `lesson-card ${isCompleted ? 'completed' : ''}`;
+                card.onclick = () => openLesson(lesson.id);
+                
+                card.innerHTML = `
+                    <div class="lesson-number">${lesson.id}</div>
+                    <h3>${lesson.title}</h3>
+                    <p>${lesson.description}</p>
+                    <div class="lesson-meta">
+                        <span>⏱️ ${lesson.duration}</span>
+                        ${isCompleted ? 
+                            '<span class="completed-badge">✓ Пройден</span>' : 
+                            '<button class="start-button" onclick="event.stopPropagation(); openLesson(' + lesson.id + ')">Начать</button>'
+                        }
+                    </div>
+                `;
+                
+                lessonsGrid.appendChild(card);
+            });
+
+            updateProgress(progress);
+        }
+
+        // Обновление прогресса
+        function updateProgress(progress) {
+            const completedCount = Object.values(progress).filter(v => v).length;
+            const percentage = (completedCount / lessons.length) * 100;
+
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressBar').textContent = Math.round(percentage) + '%';
+            document.getElementById('progressText').textContent = `Пройдено уроков: ${completedCount} из ${lessons.length}`;
+        }
+
+        // Открытие урока
+        function openLesson(lessonId) {
+            window.location.href = `lesson.html?id=${lessonId}`;
+        }
+
+        // Выход
+        function logout() {
+            localStorage.removeItem('courseUser');
+            window.location.href = 'login.html';
+        }
+
+        // Инициализация
+        window.addEventListener('load', function() {
+            const user = checkAuth();
+            if (user) {
+                displayUserInfo(user);
+                displayLessons();
+            }
+        });
+    </script>
+</body>
+</html>

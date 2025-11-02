@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в личный кабинет | Общайся легко - на Лазурке!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo .flag {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .help-text {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <div class="flag">🇫🇷</div>
+            <h1>Вход в личный кабинет</h1>
+            <p class="subtitle">Общайся легко - на Лазурке!</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="ваш@email.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="accessCode">Код доступа</label>
+                <input 
+                    type="text" 
+                    id="accessCode" 
+                    name="accessCode" 
+                    placeholder="Введите код из письма"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="login-button">Войти</button>
+        </form>
+
+        <div class="help-text">
+            📧 Код доступа был отправлен на ваш email после оплаты.<br>
+            Не нашли письмо? Проверьте папку "Спам"
+        </div>
+
+        <div class="back-link">
+            <a href="course-index.html">← Вернуться на главную</a>
+        </div>
+    </div>
+
+    <script>
+        // Демо-пользователи для тестирования (удалите в production!)
+        const demoUsers = [
+            {
+                email: 'demo@example.com',
+                code: 'DEMO2024',
+                purchaseDate: '2024-01-01',
+                expiryDays: 60
+            }
+        ];
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const accessCode = document.getElementById('accessCode').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            // Скрываем сообщения
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            // Проверка демо-пользователя
+            const user = demoUsers.find(u => u.email === email && u.code === accessCode);
+
+            if (user) {
+                // Вычисляем дату истечения
+                const purchaseDate = new Date(user.purchaseDate);
+                const expiryDate = new Date(purchaseDate);
+                expiryDate.setDate(expiryDate.getDate() + user.expiryDays);
+                
+                const now = new Date();
+
+                if (now > expiryDate) {
+                    errorMessage.textContent = '❌ Ваш доступ истёк. Пожалуйста, продлите курс.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+
+                // Сохраняем данные пользователя в localStorage
+                const userData = {
+                    email: email,
+                    accessCode: accessCode,
+                    purchaseDate: user.purchaseDate,
+                    expiryDate: expiryDate.toISOString(),
+                    loginTime: new Date().toISOString()
+                };
+
+                localStorage.setItem('courseUser', JSON.stringify(userData));
+
+                // Показываем успешное сообщение
+                successMessage.textContent = '✓ Вход выполнен успешно! Перенаправление...';
+                successMessage.style.display = 'block';
+
+                // Перенаправляем в личный кабинет
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+
+            } else {
+                // В реальном проекте здесь будет запрос к API
+                errorMessage.textContent = '❌ Неверный email или код доступа. Проверьте данные и попробуйте снова.';
+                errorMessage.style.display = 'block';
+
+                // TODO: В production версии добавьте здесь:
+                // fetch('/api/login', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ email, accessCode })
+                // })
+                // .then(response => response.json())
+                // .then(data => {
+                //     if (data.success) {
+                //         localStorage.setItem('courseUser', JSON.stringify(data.user));
+                //         window.location.href = 'dashboard.html';
+                //     } else {
+                //         errorMessage.textContent = data.message;
+                //         errorMessage.style.display = 'block';
+                //     }
+                // });
+            }
+        });
+
+        // Проверка, если пользователь уже залогинен
+        window.addEventListener('load', function() {
+            const userData = localStorage.getItem('courseUser');
+            if (userData) {
+                const user = JSON.parse(userData);
+                const expiryDate = new Date(user.expiryDate);
+                const now = new Date();
+
+                if (now < expiryDate) {
+                    // Доступ ещё действителен
+                    window.location.href = 'dashboard.html';
+                } else {
+                    // Доступ истёк - удаляем данные
+                    localStorage.removeItem('courseUser');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
