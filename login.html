@@ -197,103 +197,106 @@
     </div>
 
     <script>
-        // Демо-пользователи для тестирования (удалите в production!)
-        const demoUsers = [
-            {
-                email: 'demo@example.com',
-                code: 'DEMO2024',
-                purchaseDate: '2024-01-01',
-                expiryDays: 60
-            }
-        ];
+        const API_BASE = window.location.hostname === 'localhost'
+            ? 'http://localhost:3000/api'
+            : '/api';
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const email = document.getElementById('email').value.trim().toLowerCase();
+            const email = document.getElementById('email').value.trim();
             const accessCode = document.getElementById('accessCode').value.trim();
             const errorMessage = document.getElementById('errorMessage');
             const successMessage = document.getElementById('successMessage');
+            const submitButton = this.querySelector('button[type="submit"]');
 
             // Скрываем сообщения
             errorMessage.style.display = 'none';
             successMessage.style.display = 'none';
 
-            // Проверка демо-пользователя
-            const user = demoUsers.find(u => u.email === email && u.code === accessCode);
+            // Disable button
+            submitButton.disabled = true;
+            submitButton.textContent = 'Вход...';
 
-            if (user) {
-                // Вычисляем дату истечения
-                const purchaseDate = new Date(user.purchaseDate);
-                const expiryDate = new Date(purchaseDate);
-                expiryDate.setDate(expiryDate.getDate() + user.expiryDays);
-                
-                const now = new Date();
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, accessCode })
+                });
 
-                if (now > expiryDate) {
-                    errorMessage.textContent = '❌ Ваш доступ истёк. Пожалуйста, продлите курс.';
-                    errorMessage.style.display = 'block';
-                    return;
+                const data = await response.json();
+
+                if (data.success && data.token) {
+                    // Сохраняем токен и данные пользователя
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('courseUser', JSON.stringify({
+                        email: data.user.email,
+                        name: data.user.name,
+                        expiryDate: data.enrollment.expires_at,
+                        courseId: data.enrollment.course_id,
+                        loginTime: new Date().toISOString()
+                    }));
+
+                    // Показываем успешное сообщение
+                    successMessage.textContent = '✓ Вход выполнен успешно! Перенаправление...';
+                    successMessage.style.display = 'block';
+
+                    // Перенаправляем в личный кабинет
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+
+                } else {
+                    throw new Error(data.error || 'Login failed');
                 }
 
-                // Сохраняем данные пользователя в localStorage
-                const userData = {
-                    email: email,
-                    accessCode: accessCode,
-                    purchaseDate: user.purchaseDate,
-                    expiryDate: expiryDate.toISOString(),
-                    loginTime: new Date().toISOString()
-                };
-
-                localStorage.setItem('courseUser', JSON.stringify(userData));
-
-                // Показываем успешное сообщение
-                successMessage.textContent = '✓ Вход выполнен успешно! Перенаправление...';
-                successMessage.style.display = 'block';
-
-                // Перенаправляем в личный кабинет
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1500);
-
-            } else {
-                // В реальном проекте здесь будет запрос к API
+            } catch (error) {
+                console.error('Login error:', error);
                 errorMessage.textContent = '❌ Неверный email или код доступа. Проверьте данные и попробуйте снова.';
                 errorMessage.style.display = 'block';
-
-                // TODO: В production версии добавьте здесь:
-                // fetch('/api/login', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ email, accessCode })
-                // })
-                // .then(response => response.json())
-                // .then(data => {
-                //     if (data.success) {
-                //         localStorage.setItem('courseUser', JSON.stringify(data.user));
-                //         window.location.href = 'dashboard.html';
-                //     } else {
-                //         errorMessage.textContent = data.message;
-                //         errorMessage.style.display = 'block';
-                //     }
-                // });
+                submitButton.disabled = false;
+                submitButton.textContent = 'Войти в личный кабинет';
             }
         });
 
         // Проверка, если пользователь уже залогинен
-        window.addEventListener('load', function() {
+        window.addEventListener('load', async function() {
+            const token = localStorage.getItem('authToken');
             const userData = localStorage.getItem('courseUser');
-            if (userData) {
-                const user = JSON.parse(userData);
-                const expiryDate = new Date(user.expiryDate);
-                const now = new Date();
 
-                if (now < expiryDate) {
-                    // Доступ ещё действителен
-                    window.location.href = 'dashboard.html';
-                } else {
-                    // Доступ истёк - удаляем данные
-                    localStorage.removeItem('courseUser');
+            if (token && userData) {
+                try {
+                    // Verify token with server
+                    const response = await fetch(`${API_BASE}/auth/verify`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const user = JSON.parse(userData);
+                        const expiryDate = new Date(user.expiryDate);
+                        const now = new Date();
+
+                        if (now < expiryDate) {
+                            // Доступ ещё действителен
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            // Доступ истёк - удаляем данные
+                            localStorage.removeItem('authToken');
+                            localStorage.removeItem('courseUser');
+                        }
+                    } else {
+                        // Invalid token
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('courseUser');
+                    }
+                } catch (error) {
+                    console.error('Token verification error:', error);
+                    // Continue to login page
                 }
             }
         });

@@ -1,0 +1,107 @@
+require('dotenv').config();
+const db = require('./db');
+
+async function seed() {
+  try {
+    console.log('🌱 Seeding database...');
+
+    // Insert main course
+    const courseResult = await db.query(`
+      INSERT INTO courses (title, description, price, currency, access_duration_days)
+      VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT DO NOTHING
+      RETURNING id
+    `, [
+      'Общайся легко - на Лазурке!',
+      'Мини-курс французского языка для туристов на Французской Ривьере',
+      45.00,
+      'EUR',
+      60
+    ]);
+
+    const courseId = courseResult.rows[0]?.id || 1;
+    console.log(`✅ Course created with ID: ${courseId}`);
+
+    // Insert lessons
+    const lessons = [
+      {
+        lesson_number: 1,
+        title: 'Bonjour, Côte d\'Azur!',
+        description: 'Основные приветствия, представление, вежливые фразы',
+        duration_minutes: 18
+      },
+      {
+        lesson_number: 2,
+        title: 'Promenade des Anglais и пляжи',
+        description: 'Как спросить дорогу, заказать лежак, общение на пляже',
+        duration_minutes: 20
+      },
+      {
+        lesson_number: 3,
+        title: 'Транспорт по Лазурке',
+        description: 'Поезд TER, автобус, яхта - покупка билетов и навигация',
+        duration_minutes: 17
+      },
+      {
+        lesson_number: 4,
+        title: 'Отель и апартаменты',
+        description: 'Заселение, просьбы на ресепшн, решение проблем в номере',
+        duration_minutes: 19
+      },
+      {
+        lesson_number: 5,
+        title: 'Провансальская кухня',
+        description: 'Ресторан, меню, заказ блюд и напитков, счёт',
+        duration_minutes: 22
+      },
+      {
+        lesson_number: 6,
+        title: 'Шопинг и рынки',
+        description: 'Как спросить цену, торговаться, примерка одежды',
+        duration_minutes: 16
+      },
+      {
+        lesson_number: 7,
+        title: 'Достопримечательности',
+        description: 'Покупка билетов в музеи, парки, экскурсии',
+        duration_minutes: 15
+      },
+      {
+        lesson_number: 8,
+        title: 'Яхты, Монако и казино',
+        description: 'Специальная лексика для VIP-локаций Ривьеры',
+        duration_minutes: 21
+      },
+      {
+        lesson_number: 9,
+        title: 'Экстренные фразы',
+        description: 'Аптека, полиция, потерянные вещи, медицинская помощь',
+        duration_minutes: 14
+      },
+      {
+        lesson_number: 10,
+        title: 'Прощание и «je reviens!»',
+        description: 'Как красиво попрощаться и пообещать вернуться',
+        duration_minutes: 13
+      }
+    ];
+
+    for (const lesson of lessons) {
+      await db.query(`
+        INSERT INTO lessons (course_id, lesson_number, title, description, duration_minutes)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (course_id, lesson_number) DO NOTHING
+      `, [courseId, lesson.lesson_number, lesson.title, lesson.description, lesson.duration_minutes]);
+    }
+
+    console.log(`✅ ${lessons.length} lessons created`);
+    console.log('🎉 Database seeded successfully');
+
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Seeding failed:', error);
+    process.exit(1);
+  }
+}
+
+seed();
