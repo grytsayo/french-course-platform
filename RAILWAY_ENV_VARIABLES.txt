@@ -1,0 +1,81 @@
+===========================================
+ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ ДЛЯ RAILWAY
+===========================================
+
+Скопируйте эти переменные в Railway:
+Variables → Raw Editor → Вставьте всё ниже
+
+-------------------------------------------
+ОБЯЗАТЕЛЬНЫЕ ПЕРЕМЕННЫЕ (добавьте сразу):
+-------------------------------------------
+
+NODE_ENV=production
+PORT=3000
+JWT_SECRET=change-this-to-random-string-in-production-123456789
+
+# BASE_URL - замените на ваш Railway URL после деплоя
+BASE_URL=https://your-app.up.railway.app
+
+
+-------------------------------------------
+БАЗА ДАННЫХ (автоматически от Railway):
+-------------------------------------------
+
+# Railway автоматически добавит DATABASE_URL
+# Но также добавьте эти (используя Reference Variables):
+
+DB_HOST=${{Postgres.PGHOST}}
+DB_PORT=${{Postgres.PGPORT}}
+DB_NAME=${{Postgres.PGDATABASE}}
+DB_USER=${{Postgres.PGUSER}}
+DB_PASSWORD=${{Postgres.PGPASSWORD}}
+
+
+-------------------------------------------
+ПЛАТЕЖНЫЕ СИСТЕМЫ (добавьте позже):
+-------------------------------------------
+
+# ЮKassa (получите на https://yookassa.ru)
+YUKASSA_SHOP_ID=your_shop_id_here
+YUKASSA_SECRET_KEY=your_secret_key_here
+
+# Stripe (получите на https://stripe.com)
+STRIPE_SECRET_KEY=sk_live_your_stripe_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
+
+-------------------------------------------
+EMAIL (добавьте позже):
+-------------------------------------------
+
+# Gmail (или другой SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-gmail-app-password
+SMTP_FROM=French Course <noreply@french-course.com>
+
+
+===========================================
+ВАЖНЫЕ ЗАМЕТКИ:
+===========================================
+
+1. После деплоя обновите BASE_URL на реальный URL вашего Railway приложения
+
+2. JWT_SECRET - обязательно смените на длинный случайный ключ!
+   Пример генерации:
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+3. Webhook URLs для настройки в платёжных системах:
+   - ЮKassa: https://your-app.railway.app/api/payments/yukassa/webhook
+   - Stripe: https://your-app.railway.app/api/payments/stripe/webhook
+
+4. Для Gmail App Password:
+   - Включите 2FA в Google Account
+   - Создайте App Password: https://myaccount.google.com/apppasswords
+
+5. После добавления всех переменных - запустите миграции:
+   railway run npm run migrate
+   railway run npm run seed
+
+===========================================
