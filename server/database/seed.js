@@ -95,6 +95,27 @@ async function seed() {
     }
 
     console.log(`✅ ${lessons.length} lessons created`);
+
+    // Create test user
+    const testUserResult = await db.query(`
+      INSERT INTO users (email, name, access_code)
+      VALUES ($1, $2, $3)
+      ON CONFLICT (email) DO UPDATE SET access_code = $3
+      RETURNING id
+    `, ['test@example.com', 'Test User', 'TEST123']);
+
+    const testUserId = testUserResult.rows[0].id;
+    console.log(`✅ Test user created (email: test@example.com, code: TEST123)`);
+
+    // Create test enrollment
+    await db.query(`
+      INSERT INTO enrollments (user_id, course_id, status, expires_at)
+      VALUES ($1, $2, $3, NOW() + INTERVAL '60 days')
+      ON CONFLICT (user_id, course_id) DO UPDATE
+      SET status = 'active', expires_at = NOW() + INTERVAL '60 days'
+    `, [testUserId, courseId, 'active']);
+
+    console.log(`✅ Test enrollment created (expires in 60 days)`);
     console.log('🎉 Database seeded successfully');
 
     process.exit(0);
