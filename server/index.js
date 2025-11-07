@@ -19,12 +19,14 @@ const authRoutes = require('./routes/auth');
 const paymentRoutes = require('./routes/payments');
 const courseRoutes = require('./routes/courses');
 const userRoutes = require('./routes/users');
+const adminRoutes = require('./routes/admin');
 
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
