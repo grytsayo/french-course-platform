@@ -5,22 +5,32 @@ async function seed() {
   try {
     console.log('🌱 Seeding database...');
 
-    // Insert main course
-    const courseResult = await db.query(`
-      INSERT INTO courses (title, description, price, currency, access_duration_days)
-      VALUES ($1, $2, $3, $4, $5)
-      ON CONFLICT DO NOTHING
-      RETURNING id
-    `, [
-      'Общайся легко - на Лазурке!',
-      'Мини-курс французского языка для туристов на Французской Ривьере',
-      45.00,
-      'EUR',
-      60
-    ]);
+    // Check if course already exists
+    const existingCourse = await db.query(`
+      SELECT id FROM courses WHERE title = $1
+    `, ['Общайся легко - на Лазурке!']);
 
-    const courseId = courseResult.rows[0]?.id || 1;
-    console.log(`✅ Course created with ID: ${courseId}`);
+    let courseId;
+
+    if (existingCourse.rows.length > 0) {
+      courseId = existingCourse.rows[0].id;
+      console.log(`✅ Course already exists with ID: ${courseId}`);
+    } else {
+      // Insert main course only if it doesn't exist
+      const courseResult = await db.query(`
+        INSERT INTO courses (title, description, price, currency, access_duration_days)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id
+      `, [
+        'Общайся легко - на Лазурке!',
+        'Мини-курс французского языка для туристов на Французской Ривьере',
+        45.00,
+        'EUR',
+        60
+      ]);
+      courseId = courseResult.rows[0].id;
+      console.log(`✅ Course created with ID: ${courseId}`);
+    }
 
     // Insert lessons
     const lessons = [
